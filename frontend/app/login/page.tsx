@@ -9,7 +9,7 @@ export default function LoginPage() {
   const handleLogin = async () => {
     try {
       const response = await fetch(
-        "http://localhost:5000/api/auth/login",
+        `${process.env.NEXT_PUBLIC_API_URL}/api/auth/login`,
         {
           method: "POST",
           headers: {
@@ -26,11 +26,14 @@ export default function LoginPage() {
 
       if (response.ok) {
         localStorage.setItem("token", data.token);
+
         document.cookie = `token=${data.token}; path=/`;
+
         alert("Login Successful");
+
         window.location.href = "/dashboard";
       } else {
-        alert(data.message);
+        alert(data.message || "Login Failed");
       }
     } catch (error) {
       console.error(error);

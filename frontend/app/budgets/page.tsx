@@ -9,12 +9,18 @@ export default function BudgetsPage() {
   const [editingId, setEditingId] = useState<number | null>(null);
 
   const fetchBudgets = async () => {
-    const response = await fetch(
-      "http://localhost:5000/api/budgets"
-    );
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/budgets`
+      );
 
-    const data = await response.json();
-    setBudgets(data);
+      const data = await response.json();
+
+      setBudgets(Array.isArray(data) ? data : []);
+    } catch (error) {
+      console.error(error);
+      setBudgets([]);
+    }
   };
 
   useEffect(() => {
@@ -23,11 +29,11 @@ export default function BudgetsPage() {
 
   const handleSaveBudget = async () => {
     try {
-      let url = "http://localhost:5000/api/budgets";
+      let url = `${process.env.NEXT_PUBLIC_API_URL}/api/budgets`;
       let method = "POST";
 
       if (editingId) {
-        url = `http://localhost:5000/api/budgets/${editingId}`;
+        url = `${process.env.NEXT_PUBLIC_API_URL}/api/budgets/${editingId}`;
         method = "PUT";
       }
 
@@ -46,8 +52,8 @@ export default function BudgetsPage() {
       if (response.ok) {
         alert(
           editingId
-            ? "Budget Updated"
-            : "Budget Added"
+            ? "Budget Updated Successfully"
+            : "Budget Added Successfully"
         );
 
         setCategory("");
@@ -58,14 +64,14 @@ export default function BudgetsPage() {
       }
     } catch (error) {
       console.error(error);
-      alert("Error");
+      alert("Error saving budget");
     }
   };
 
   const handleDelete = async (id: number) => {
     try {
       await fetch(
-        `http://localhost:5000/api/budgets/${id}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/budgets/${id}`,
         {
           method: "DELETE",
         }
@@ -132,44 +138,48 @@ export default function BudgetsPage() {
         Budget List
       </h2>
 
-      {budgets.map((budget) => (
-        <div
-          key={budget.id}
-          className="border p-4 rounded shadow mb-4"
-        >
-          <h3 className="font-bold text-lg">
-            {budget.category}
-          </h3>
+      {budgets.length === 0 ? (
+        <p>No budgets found.</p>
+      ) : (
+        budgets.map((budget) => (
+          <div
+            key={budget.id}
+            className="border p-4 rounded shadow mb-4"
+          >
+            <h3 className="font-bold text-lg">
+              {budget.category}
+            </h3>
 
-          <p>
-            Budget: ₹{budget.limit_amount}
-          </p>
+            <p>
+              Budget: ₹{budget.limit_amount}
+            </p>
 
-          <div className="mt-3 flex gap-2">
-            <button
-              onClick={() => {
-                setCategory(budget.category);
-                setLimitAmount(
-                  budget.limit_amount
-                );
-                setEditingId(budget.id);
-              }}
-              className="bg-blue-500 text-white px-3 py-1 rounded"
-            >
-              Edit
-            </button>
+            <div className="mt-3 flex gap-2">
+              <button
+                onClick={() => {
+                  setCategory(budget.category);
+                  setLimitAmount(
+                    budget.limit_amount.toString()
+                  );
+                  setEditingId(budget.id);
+                }}
+                className="bg-blue-500 text-white px-3 py-1 rounded"
+              >
+                Edit
+              </button>
 
-            <button
-              onClick={() =>
-                handleDelete(budget.id)
-              }
-              className="bg-red-500 text-white px-3 py-1 rounded"
-            >
-              Delete
-            </button>
+              <button
+                onClick={() =>
+                  handleDelete(budget.id)
+                }
+                className="bg-red-500 text-white px-3 py-1 rounded"
+              >
+                Delete
+              </button>
+            </div>
           </div>
-        </div>
-      ))}
+        ))
+      )}
     </div>
   );
 }

@@ -13,11 +13,12 @@ export default function ExpensesPage() {
   const fetchExpenses = async () => {
     try {
       const response = await fetch(
-        "http://localhost:5000/api/expenses"
+        `${process.env.NEXT_PUBLIC_API_URL}/api/expenses`
       );
 
       const data = await response.json();
-      setExpenses(data);
+
+      setExpenses(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error(error);
     }
@@ -29,11 +30,11 @@ export default function ExpensesPage() {
 
   const handleAddExpense = async () => {
     try {
-      let url = "http://localhost:5000/api/expenses";
+      let url = `${process.env.NEXT_PUBLIC_API_URL}/api/expenses`;
       let method = "POST";
 
       if (editingId) {
-        url = `http://localhost:5000/api/expenses/${editingId}`;
+        url = `${process.env.NEXT_PUBLIC_API_URL}/api/expenses/${editingId}`;
         method = "PUT";
       }
 
@@ -51,13 +52,12 @@ export default function ExpensesPage() {
       });
 
       const data = await response.json();
-      console.log("Expenses API:", data);
 
       if (response.ok) {
         alert(
           editingId
-            ? "Expense Updated"
-            : "Expense Added"
+            ? "Expense Updated Successfully"
+            : "Expense Added Successfully"
         );
 
         setTitle("");
@@ -78,7 +78,7 @@ export default function ExpensesPage() {
   const handleDelete = async (id: number) => {
     try {
       await fetch(
-        `http://localhost:5000/api/expenses/${id}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/expenses/${id}`,
         {
           method: "DELETE",
         }
@@ -92,16 +92,16 @@ export default function ExpensesPage() {
   };
 
   const filteredExpenses = Array.isArray(expenses)
-  ? expenses.filter(
-      (expense) =>
-        expense.title
-          .toLowerCase()
-          .includes(search.toLowerCase()) ||
-        expense.category
-          .toLowerCase()
-          .includes(search.toLowerCase())
-    )
-  : [];
+    ? expenses.filter(
+        (expense) =>
+          expense.title
+            .toLowerCase()
+            .includes(search.toLowerCase()) ||
+          expense.category
+            .toLowerCase()
+            .includes(search.toLowerCase())
+      )
+    : [];
 
   return (
     <div className="min-h-screen p-10">
@@ -174,7 +174,7 @@ export default function ExpensesPage() {
               <button
                 onClick={() => {
                   setTitle(expense.title);
-                  setAmount(expense.amount);
+                  setAmount(expense.amount.toString());
                   setCategory(expense.category);
                   setEditingId(expense.id);
                 }}

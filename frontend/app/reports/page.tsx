@@ -15,33 +15,43 @@ export default function ReportsPage() {
   const fetchReportData = async () => {
     try {
       const expenseRes = await fetch(
-        "http://localhost:5000/api/expenses"
+        `${process.env.NEXT_PUBLIC_API_URL}/api/expenses`
       );
 
       const expenses = await expenseRes.json();
 
-      const expenseTotal = expenses.reduce(
-        (sum: number, item: any) =>
-          sum + Number(item.amount),
-        0
-      );
+      const expenseTotal = Array.isArray(expenses)
+        ? expenses.reduce(
+            (sum: number, item: any) =>
+              sum + Number(item.amount),
+            0
+          )
+        : 0;
 
       setTotalExpenses(expenseTotal);
-      setTransactions(expenses.length);
+
+      setTransactions(
+        Array.isArray(expenses)
+          ? expenses.length
+          : 0
+      );
 
       const budgetRes = await fetch(
-        "http://localhost:5000/api/budgets"
+        `${process.env.NEXT_PUBLIC_API_URL}/api/budgets`
       );
 
       const budgets = await budgetRes.json();
 
-      const budgetTotal = budgets.reduce(
-        (sum: number, item: any) =>
-          sum + Number(item.limit_amount),
-        0
-      );
+      const budgetTotal = Array.isArray(budgets)
+        ? budgets.reduce(
+            (sum: number, item: any) =>
+              sum + Number(item.limit_amount),
+            0
+          )
+        : 0;
 
       setTotalBudget(budgetTotal);
+
     } catch (error) {
       console.error(error);
     }
@@ -53,7 +63,11 @@ export default function ReportsPage() {
     const doc = new jsPDF();
 
     doc.setFontSize(22);
-    doc.text("FinTech Financial Report", 20, 20);
+    doc.text(
+      "FinTech Financial Report",
+      20,
+      20
+    );
 
     doc.setFontSize(14);
 

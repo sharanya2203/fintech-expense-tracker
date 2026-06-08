@@ -19,7 +19,7 @@ export default function DashboardPage() {
     try {
       // Expenses
       const expenseRes = await fetch(
-        "http://localhost:5000/api/expenses"
+        `${process.env.NEXT_PUBLIC_API_URL}/api/expenses`
       );
 
       const expenses = await expenseRes.json();
@@ -94,7 +94,7 @@ export default function DashboardPage() {
 
       // Budgets
       const budgetRes = await fetch(
-        "http://localhost:5000/api/budgets"
+        `${process.env.NEXT_PUBLIC_API_URL}/api/budgets`
       );
 
       const budgets = await budgetRes.json();
@@ -122,9 +122,7 @@ export default function DashboardPage() {
         FinTech Dashboard
       </h1>
 
-      {/* Summary Cards */}
       <div className="grid md:grid-cols-3 gap-6">
-
         <div className="bg-red-50 border border-red-200 p-6 rounded-xl shadow">
           <h2 className="text-xl font-semibold text-red-600">
             Total Expenses
@@ -154,10 +152,8 @@ export default function DashboardPage() {
             ₹{remaining}
           </p>
         </div>
-
       </div>
 
-      {/* Budget Usage */}
       <div className="mt-10">
         <h2 className="text-2xl font-bold mb-4">
           Budget Usage
@@ -187,7 +183,6 @@ export default function DashboardPage() {
         </p>
       </div>
 
-      {/* Expense Analytics */}
       <div className="mt-12">
         <h2 className="text-3xl font-bold mb-6">
           Expense Analytics
@@ -198,7 +193,6 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Recent Transactions */}
       <div className="mt-12">
         <h2 className="text-3xl font-bold mb-6">
           Recent Transactions
@@ -234,7 +228,6 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Monthly Trends */}
       <div className="mt-12">
         <h2 className="text-3xl font-bold mb-6">
           Monthly Expense Trends
@@ -246,7 +239,6 @@ export default function DashboardPage() {
           />
         </div>
       </div>
-
     </div>
   );
 }
